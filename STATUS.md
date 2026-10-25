@@ -53,7 +53,7 @@ expansion, the backup format and release parsing are covered by JVM unit tests. 
 Reported by Roger, Oct 25, 2026:
 
 - **In-app update 1.1 → 1.2:** the update was found, downloaded and installed through
-  Android's update prompt.
+  Android's update prompt, and workouts and settings survived it.
 - **Pause icon (1.2):** the running timer's center button shows a pause icon.
 
 ## To verify on a phone
@@ -64,7 +64,6 @@ Reported by Roger, Oct 25, 2026:
 - Speech ducks or pauses other audio (music) and restores it afterwards.
 - Export a backup, clear app data, import it: workouts and settings come back.
 - A release APK from GitHub installs over the previous one without losing data.
-- Workouts and settings survive an in-app update (not confirmed in the 1.1 → 1.2 report).
 - "Not now" hides the card until a newer version; "Check for updates" brings it back.
 - Whether granting "Install unknown apps" restarts the app process on some Android
   versions. If it does, tap Update again; the download starts over.
