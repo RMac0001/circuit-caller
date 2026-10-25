@@ -13,8 +13,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -149,7 +149,7 @@ fun RunScreen(
             )
             HSpace(18)
             RoundIconButton(
-                icon = if (state.paused) Icons.Default.PlayArrow else Icons.Default.Refresh,
+                icon = if (state.paused) Icons.Default.PlayArrow else Icons.Default.Pause,
                 contentDescription = if (state.paused) "Resume" else "Pause",
                 onClick = onPauseResume,
                 size = 78.dp,
