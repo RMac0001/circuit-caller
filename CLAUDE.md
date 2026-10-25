@@ -44,6 +44,12 @@ branch, do the build.
   actions); `Speaker` wraps TextToSpeech, audio focus and beeps.
 - `ui/`: single `MainActivity` with Navigation Compose; `AppViewModel` is shared by the
   screens (`library`, `editor`, `run`, `settings`).
+- `update/`: in-app updater. `Release` (pure: parses GitHub's `releases/latest`, compares
+  versions; unit-tested), `UpdateClient` (HttpURLConnection check and SHA-256-verified
+  download to `cacheDir/updates/`), `UpdateInstaller` (PackageInstaller session committed
+  to `InstallResultReceiver`, whose failures reach the UI through `InstallEvents`). The
+  last-check time and dismissed version are `UpdatePrefs` in DataStore, deliberately not
+  part of `AppSettings` or backups.
 - `CircuitApp` owns the database and settings repository and seeds an example workout on
   first launch.
 
@@ -55,10 +61,15 @@ branch, do the build.
 - Backup import validates the whole file before writing anything; never half-import.
 - Bump `Backup.VERSION` and keep reading old versions when the backup format changes.
 - Room schema changes need a migration (bump the `@Database` version); don't wipe user data.
+- Never check for, download or install an update while `TimerService.state.value.active`.
+- The install `PendingIntent` must stay `FLAG_MUTABLE` (API 31+); with `FLAG_IMMUTABLE` the
+  installer can't add its extras and the confirmation prompt never appears.
 
 ## Versioning
 
-Bump both `versionCode` (+1) and `versionName` in `app/build.gradle.kts`. Pushing a new
+Always bump `versionCode` (+1) and `versionName` in `app/build.gradle.kts` together: Android
+refuses to install a lower or equal `versionCode` as an update, so the release workflow fails
+when `versionName` changes without a higher `versionCode`. Pushing a new
 `versionName` to `main` makes the release workflow run `check`, build the release APK and
 publish a GitHub release (tag without a `v` prefix) with `circuit-caller-<version>.apk`
 attached. Tags can't be pushed from Claude Code cloud sessions, so don't rely on pushing tags.

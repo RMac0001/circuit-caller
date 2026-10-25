@@ -6,6 +6,7 @@ import com.roger.circuitcaller.data.AppDatabase
 import com.roger.circuitcaller.data.Exercise
 import com.roger.circuitcaller.data.SettingsRepository
 import com.roger.circuitcaller.data.Workout
+import com.roger.circuitcaller.update.UpdateInstaller
 import java.util.UUID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -24,6 +25,8 @@ class CircuitApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        // Synchronous so it can't race a download started right after launch.
+        UpdateInstaller.updatesDir(this).deleteRecursively()
         appScope.launch { seedIfEmpty() }
     }
 
