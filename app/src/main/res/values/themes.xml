@@ -1,0 +1,7 @@
+<resources>
+    <style name="Theme.CircuitCaller" parent="android:Theme.Material.NoActionBar">
+        <item name="android:statusBarColor">#14171A</item>
+        <item name="android:navigationBarColor">#14171A</item>
+        <item name="android:windowBackground">#14171A</item>
+    </style>
+</resources>
