@@ -33,6 +33,29 @@ jobs:
           else
             echo "exists=false" >> "$GITHUB_OUTPUT"
           fi
+      - name: Check that versionCode increased
+        if: steps.version.outputs.exists == 'false'
+        # Android won't install a lower or equal versionCode as an update.
+        run: |
+          read_code() { sed -n 's/^ *versionCode = \([0-9][0-9]*\).*/\1/p'; }
+          code=$(read_code < app/build.gradle.kts)
+          if [ -z "$code" ]; then
+            echo "Couldn't read versionCode from app/build.gradle.kts" >&2
+            exit 1
+          fi
+          previous_tag=$(gh release view --json tagName --jq .tagName 2> /dev/null || true)
+          if [ -z "$previous_tag" ]; then
+            echo "No earlier release; versionCode $code is fine."
+            exit 0
+          fi
+          git fetch --depth=1 origin "refs/tags/$previous_tag:refs/tags/$previous_tag"
+          previous_code=$(git show "$previous_tag:app/build.gradle.kts" | read_code)
+          if [ -n "$previous_code" ] && [ "$code" -le "$previous_code" ]; then
+            echo "versionName changed to ${{ steps.version.outputs.version }} but versionCode $code" \
+              "is not greater than $previous_code (release $previous_tag). Bump both together." >&2
+            exit 1
+          fi
+          echo "versionCode $previous_code ($previous_tag) -> $code"
       - uses: actions/setup-java@v4
         if: steps.version.outputs.exists == 'false'
         with:

@@ -1,6 +1,6 @@
 # Implementation status
 
-Version 1.0: workout library, editor, runner (foreground service with speech, beeps and
+Version 1.1 adds the in-app updater (below). Version 1.0: workout library, editor, runner (foreground service with speech, beeps and
 vibration), settings and JSON backup/restore are implemented. Segment expansion and the
 backup format are covered by JVM unit tests. Nothing has been checked on a phone through
 this repository's builds yet; see "To verify" below.
@@ -21,6 +21,28 @@ this repository's builds yet; see "To verify" below.
   from Android Studio with a different debug key has to be uninstalled once (export a backup
   first) before these APKs will install over it.
 
+## In-app updater (1.1)
+
+- Checks `https://api.github.com/repos/RMac0001/circuit-caller/releases/latest` (unauthenticated,
+  so GitHub allows 60 requests an hour per IP) with HttpURLConnection; no new dependencies.
+  Release tags have no `v` prefix (see `release.yml`); a leading `v` is stripped anyway.
+- Automatic check: when the library opens, at most once per 24 hours (`update_last_check`),
+  silent on any failure, and quiet for a version the user dismissed with "Not now"
+  (`update_dismissed_version`) until a newer one appears. The manual check always reports
+  back and shows a dismissed version again. Neither key is part of backups.
+- The download streams to `cacheDir/updates/circuit-caller-<version>.apk`, which is emptied
+  on every app start. It is checked against the asset's `digest` (`sha256:<hex>`) when
+  GitHub provides one; without one, Android's signature check still applies.
+- Verified on the JVM against the live 1.0 release (Oct 25, 2026): the API response parses,
+  the download follows GitHub's 302 to `release-assets.githubusercontent.com`, all
+  11,705,896 bytes arrive, the SHA-256 matches, and a wrong digest aborts and deletes the file.
+- Install uses a PackageInstaller session (`MODE_FULL_INSTALL`, `setAppPackageName`) committed
+  with a `FLAG_MUTABLE` broadcast `PendingIntent` to the non-exported `InstallResultReceiver`.
+  It starts Android's confirmation on `STATUS_PENDING_USER_ACTION` and reports failures as a
+  snackbar.
+- `release.yml` now fails when `versionName` changes but `versionCode` isn't higher than the
+  previous release's.
+
 ## Known issues
 
 - `targetSdk` is 34. Fine for sideloading; Google Play would require a newer target.
@@ -33,3 +55,8 @@ this repository's builds yet; see "To verify" below.
 - Speech ducks or pauses other audio (music) and restores it afterwards.
 - Export a backup, clear app data, import it: workouts and settings come back.
 - A release APK from GitHub installs over the previous one without losing data.
+- In-app update end to end (needs a 1.2 release): card appears, download completes, the
+  "Install unknown apps" round trip resumes the install, Android's update prompt shows,
+  and workouts and settings survive.
+- Whether granting "Install unknown apps" restarts the app process on some Android
+  versions. If it does, tap Update again; the download starts over.

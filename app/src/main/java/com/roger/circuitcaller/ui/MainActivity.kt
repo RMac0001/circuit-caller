@@ -2,8 +2,10 @@ package com.roger.circuitcaller.ui
 
 import android.Manifest
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -14,9 +16,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface as MaterialSurface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -30,6 +35,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.roger.circuitcaller.BuildConfig
 import com.roger.circuitcaller.timer.TimerService
 import com.roger.circuitcaller.ui.editor.EditorScreen
 import com.roger.circuitcaller.ui.library.LibraryScreen
@@ -38,7 +44,9 @@ import com.roger.circuitcaller.ui.run.RunScreen
 import com.roger.circuitcaller.ui.settings.SettingsScreen
 import com.roger.circuitcaller.ui.theme.Background
 import com.roger.circuitcaller.ui.theme.CircuitCallerTheme
+import com.roger.circuitcaller.ui.theme.Surface
 import com.roger.circuitcaller.ui.theme.TextPrimary
+import com.roger.circuitcaller.ui.theme.Work
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -136,6 +144,45 @@ private fun AppRoot(onKeepScreenOn: (Boolean) -> Unit) {
         }
     }
 
+    val update by vm.update.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        vm.messages.collect { snackbarHostState.showSnackbar(it) }
+    }
+
+    // Returning from "Install unknown apps" re-checks the permission and carries on.
+    val installPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { vm.onReturnedFromInstallPermission() }
+
+    if (update.needsInstallPermission) {
+        AlertDialog(
+            onDismissRequest = vm::cancelInstallPermission,
+            title = { Text("Allow updates") },
+            text = {
+                Text(
+                    "Android needs permission for Circuit Caller to install its own updates. " +
+                        "Turn on \"Allow from this source\", then come back."
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    vm.onInstallPermissionPromptShown()
+                    installPermissionLauncher.launch(
+                        Intent(
+                            Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+                            Uri.parse("package:${context.packageName}")
+                        )
+                    )
+                }) { Text("Open settings", color = Work) }
+            },
+            dismissButton = {
+                TextButton(onClick = vm::cancelInstallPermission) { Text("Not now") }
+            },
+            containerColor = Surface
+        )
+    }
+
     val importLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument()
     ) { uri ->
@@ -158,6 +205,7 @@ private fun AppRoot(onKeepScreenOn: (Boolean) -> Unit) {
     Box(Modifier.fillMaxSize()) {
         NavHost(navController = navController, startDestination = "library") {
             composable("library") {
+                LaunchedEffect(Unit) { vm.autoCheckForUpdate() }
                 LibraryScreen(
                     workouts = workouts,
                     settings = settings,
@@ -168,7 +216,12 @@ private fun AppRoot(onKeepScreenOn: (Boolean) -> Unit) {
                     },
                     onSettings = { navController.navigate("settings") },
                     onExport = { exportLauncher.launch("circuit-caller-backup.json") },
-                    onImport = { importLauncher.launch(arrayOf("application/json", "text/plain")) }
+                    onImport = { importLauncher.launch(arrayOf("application/json", "text/plain")) },
+                    update = update,
+                    versionName = BuildConfig.VERSION_NAME,
+                    onCheckForUpdates = vm::checkForUpdateNow,
+                    onUpdate = vm::startUpdate,
+                    onDismissUpdate = vm::dismissUpdate
                 )
             }
 

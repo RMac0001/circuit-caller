@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
@@ -24,6 +25,12 @@ data class AppSettings(
     val prepSeconds: Int = 3
 )
 
+/**
+ * Updater bookkeeping. Kept out of [AppSettings] on purpose: it is device state, not a
+ * preference, so it isn't exported, and importing a backup must not reset it.
+ */
+data class UpdatePrefs(val lastCheckAt: Long = 0L, val dismissedVersion: String = "")
+
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
 class SettingsRepository(private val context: Context) {
@@ -38,7 +45,19 @@ class SettingsRepository(private val context: Context) {
         val VOICE_NAME = stringPreferencesKey("tts_voice_name")
         val RATE = floatPreferencesKey("speech_rate")
         val PREP = intPreferencesKey("prep_seconds")
+        val UPDATE_LAST_CHECK = longPreferencesKey("update_last_check")
+        val UPDATE_DISMISSED = stringPreferencesKey("update_dismissed_version")
     }
+
+    val updatePrefs: Flow<UpdatePrefs> = context.dataStore.data.map { p ->
+        UpdatePrefs(
+            lastCheckAt = p[Keys.UPDATE_LAST_CHECK] ?: 0L,
+            dismissedVersion = p[Keys.UPDATE_DISMISSED] ?: ""
+        )
+    }
+
+    suspend fun setUpdateLastCheck(at: Long) = edit { it[Keys.UPDATE_LAST_CHECK] = at }
+    suspend fun setUpdateDismissed(version: String) = edit { it[Keys.UPDATE_DISMISSED] = version }
 
     val settings: Flow<AppSettings> = context.dataStore.data.map { p ->
         AppSettings(
