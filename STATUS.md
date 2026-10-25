@@ -1,9 +1,10 @@
 # Implementation status
 
-Version 1.1 adds the in-app updater (below). Version 1.0: workout library, editor, runner (foreground service with speech, beeps and
-vibration), settings and JSON backup/restore are implemented. Segment expansion and the
-backup format are covered by JVM unit tests. Nothing has been checked on a phone through
-this repository's builds yet; see "To verify" below.
+Version 1.2 shows a pause icon (not refresh) on the running timer's pause button. Version 1.1
+added the in-app updater (below). Version 1.0: workout library, editor, runner (foreground
+service with speech, beeps and vibration), settings and JSON backup/restore. Segment
+expansion, the backup format and release parsing are covered by JVM unit tests. See
+"Verified on a phone" and "To verify" below.
 
 ## Build setup (Oct 25, 2026)
 
@@ -13,8 +14,8 @@ this repository's builds yet; see "To verify" below.
   `ktlintFormat`. The existing code was reformatted once to match; that commit only changes
   layout.
 - CI (`.github/workflows/ci.yml`) runs `./gradlew check` and builds a debug APK on every
-  push and pull request. Cloud sessions can't reach `dl.google.com` under the current network
-  policy, so CI is the only place the Android build runs until that host is allowed.
+  push and pull request. Cloud sessions can also run the full build once `dl.google.com` is
+  allowed in the environment's network settings (it is as of Oct 25, 2026).
 - Release (`.github/workflows/release.yml`) publishes a GitHub release with the APK when
   `versionName` changes on `main`.
 - Release builds are signed with the committed `app/debug.keystore`. An install made earlier
@@ -47,6 +48,14 @@ this repository's builds yet; see "To verify" below.
 
 - `targetSdk` is 34. Fine for sideloading; Google Play would require a newer target.
 
+## Verified on a phone
+
+Reported by Roger, Oct 25, 2026:
+
+- **In-app update 1.1 → 1.2:** the update was found, downloaded and installed through
+  Android's update prompt, and workouts and settings survived it.
+- **Pause icon (1.2):** the running timer's center button shows a pause icon.
+
 ## To verify on a phone
 
 - Timer keeps counting and speaking with the screen off and the app in the background.
@@ -55,8 +64,6 @@ this repository's builds yet; see "To verify" below.
 - Speech ducks or pauses other audio (music) and restores it afterwards.
 - Export a backup, clear app data, import it: workouts and settings come back.
 - A release APK from GitHub installs over the previous one without losing data.
-- In-app update end to end (needs a 1.2 release): card appears, download completes, the
-  "Install unknown apps" round trip resumes the install, Android's update prompt shows,
-  and workouts and settings survive.
+- "Not now" hides the card until a newer version; "Check for updates" brings it back.
 - Whether granting "Install unknown apps" restarts the app process on some Android
   versions. If it does, tap Update again; the download starts over.
