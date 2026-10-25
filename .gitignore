@@ -1,0 +1,22 @@
+# Gradle & build output (APKs are attached to GitHub releases, not committed)
+.gradle/
+.kotlin/
+build/
+*.apk
+*.aab
+
+# Machine-specific SDK path
+local.properties
+
+# Signing keys. app/debug.keystore is the one deliberate exception; see CLAUDE.md.
+*.jks
+*.keystore
+!app/debug.keystore
+
+# Editors & OS
+.idea/
+*.iml
+.vscode/
+captures/
+.DS_Store
+Thumbs.db
