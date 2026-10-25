@@ -56,6 +56,7 @@ class Speaker(private val context: Context) {
                 tts?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
                     override fun onStart(utteranceId: String?) {}
                     override fun onDone(utteranceId: String?) = abandonFocus()
+
                     @Deprecated("Deprecated in Java")
                     override fun onError(utteranceId: String?) = abandonFocus()
                 })
@@ -71,11 +72,10 @@ class Speaker(private val context: Context) {
         }.getOrNull()
     }
 
-    fun availableVoices(): List<Voice> =
-        tts?.voices
-            ?.filter { it.locale.language == "en" && !it.isNetworkConnectionRequired }
-            ?.sortedBy { it.name }
-            ?: emptyList()
+    fun availableVoices(): List<Voice> = tts?.voices
+        ?.filter { it.locale.language == "en" && !it.isNetworkConnectionRequired }
+        ?.sortedBy { it.name }
+        ?: emptyList()
 
     private fun applyVoice() {
         val engine = tts ?: return

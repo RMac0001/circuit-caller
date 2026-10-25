@@ -103,20 +103,26 @@ fun SettingsScreen(
         LazyColumn(verticalArrangement = Arrangement.spacedBy(9.dp)) {
             item {
                 ToggleRow(
-                    "Voice callouts", "Speak exercise names",
-                    settings.voiceEnabled, onVoice
+                    "Voice callouts",
+                    "Speak exercise names",
+                    settings.voiceEnabled,
+                    onVoice
                 )
             }
             item {
                 ToggleRow(
-                    "Spoken countdown", "3 – 2 – 1 before each set",
-                    settings.countdownEnabled, onCountdown
+                    "Spoken countdown",
+                    "3 – 2 – 1 before each set",
+                    settings.countdownEnabled,
+                    onCountdown
                 )
             }
             item {
                 ToggleRow(
-                    "Halfway callout", "Say “halfway” during sets of a minute or more",
-                    settings.halfwayCallout, onHalfway
+                    "Halfway callout",
+                    "Say “halfway” during sets of a minute or more",
+                    settings.halfwayCallout,
+                    onHalfway
                 )
             }
             item {
@@ -124,14 +130,18 @@ fun SettingsScreen(
             }
             item {
                 ToggleRow(
-                    "Vibrate", "Buzz on each phase change",
-                    settings.vibrateEnabled, onVibrate
+                    "Vibrate",
+                    "Buzz on each phase change",
+                    settings.vibrateEnabled,
+                    onVibrate
                 )
             }
             item {
                 ToggleRow(
-                    "Keep screen on", "The timer runs either way",
-                    settings.keepScreenOn, onKeepScreenOn
+                    "Keep screen on",
+                    "The timer runs either way",
+                    settings.keepScreenOn,
+                    onKeepScreenOn
                 )
             }
 
@@ -250,11 +260,7 @@ fun SettingsScreen(
 }
 
 @Composable
-private fun VoiceDropdown(
-    selected: String,
-    options: List<String>,
-    onPick: (String) -> Unit
-) {
+private fun VoiceDropdown(selected: String, options: List<String>, onPick: (String) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
     val label = when {
         selected.isBlank() -> "System default"

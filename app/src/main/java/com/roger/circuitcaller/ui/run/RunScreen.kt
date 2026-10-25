@@ -142,7 +142,10 @@ fun RunScreen(
             horizontalArrangement = Arrangement.Center
         ) {
             RoundIconButton(
-                Icons.Default.KeyboardArrowLeft, "Previous", onPrevious, size = 54.dp
+                Icons.Default.KeyboardArrowLeft,
+                "Previous",
+                onPrevious,
+                size = 54.dp
             )
             HSpace(18)
             RoundIconButton(
@@ -156,7 +159,10 @@ fun RunScreen(
             )
             HSpace(18)
             RoundIconButton(
-                Icons.Default.KeyboardArrowRight, "Skip", onSkip, size = 54.dp
+                Icons.Default.KeyboardArrowRight,
+                "Skip",
+                onSkip,
+                size = 54.dp
             )
         }
 
@@ -168,8 +174,11 @@ fun RunScreen(
         )
         VSpace(10)
         RoundIconButton(
-            Icons.Default.Close, "End workout", { confirmStop = true },
-            size = 44.dp, tint = Danger
+            Icons.Default.Close,
+            "End workout",
+            { confirmStop = true },
+            size = 44.dp,
+            tint = Danger
         )
         VSpace(18)
     }
@@ -194,11 +203,7 @@ fun RunScreen(
 }
 
 @Composable
-fun DoneScreen(
-    state: RunState,
-    onAgain: () -> Unit,
-    onHome: () -> Unit
-) {
+fun DoneScreen(state: RunState, onAgain: () -> Unit, onHome: () -> Unit) {
     val intervals = state.segments.count { it.type == SegmentType.WORK }
     val workSeconds = state.segments
         .filter { it.type == SegmentType.WORK }

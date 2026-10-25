@@ -17,8 +17,22 @@ android {
         versionName = "1.0"
     }
 
+    signingConfigs {
+        // Committed on purpose: local and CI builds share one key, so any APK installs as
+        // an update over any other. Swap for a secret release key before publishing anywhere.
+        getByName("debug") {
+            storeFile = file("debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+    }
+
     buildTypes {
-        release { isMinifyEnabled = false }
+        release {
+            isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("debug")
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -51,4 +65,8 @@ dependencies {
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
     ksp("androidx.room:room-compiler:2.6.1")
+
+    testImplementation("junit:junit:4.13.2")
+    // android.jar's org.json is a stub in JVM unit tests; this is the real implementation.
+    testImplementation("org.json:json:20240303")
 }

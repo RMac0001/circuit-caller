@@ -91,10 +91,7 @@ val AppTypography = Typography(
 )
 
 @Composable
-fun CircuitCallerTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
-) {
+fun CircuitCallerTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = Scheme,
         typography = AppTypography,

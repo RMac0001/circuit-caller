@@ -128,12 +128,7 @@ private fun FooterLink(label: String, onClick: () -> Unit) {
 }
 
 @Composable
-private fun WorkoutCard(
-    workout: WorkoutWithExercises,
-    prepSeconds: Int,
-    onOpen: () -> Unit,
-    onStart: () -> Unit
-) {
+private fun WorkoutCard(workout: WorkoutWithExercises, prepSeconds: Int, onOpen: () -> Unit, onStart: () -> Unit) {
     val count = workout.usableExercises.size
     val duration = SegmentBuilder.totalSeconds(workout, prepSeconds)
 

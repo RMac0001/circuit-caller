@@ -103,9 +103,11 @@ class TimerService : Service() {
         }
 
         fun send(context: Context, action: String) {
-            context.startService(Intent(context, TimerService::class.java).apply {
-                this.action = action
-            })
+            context.startService(
+                Intent(context, TimerService::class.java).apply {
+                    this.action = action
+                }
+            )
         }
 
         fun clearFinished() {
@@ -144,9 +146,13 @@ class TimerService : Service() {
                 val id = intent.getStringExtra(EXTRA_WORKOUT_ID).orEmpty()
                 if (id.isNotBlank()) startWorkout(id)
             }
+
             ACTION_PAUSE_RESUME -> togglePause()
+
             ACTION_SKIP -> jumpTo(_state.value.index + 1)
+
             ACTION_PREVIOUS -> previous()
+
             ACTION_STOP -> stopRun()
         }
         return START_STICKY
@@ -213,10 +219,12 @@ class TimerService : Service() {
                 }
                 vibrate(longArrayOf(0, 40))
             }
+
             SegmentType.WORK -> {
                 if (settings.voiceEnabled) speaker.say(seg.label)
                 vibrate(longArrayOf(0, 80, 60, 80))
             }
+
             SegmentType.REST -> {
                 if (settings.voiceEnabled) speaker.say("Rest")
                 vibrate(longArrayOf(0, 120))
@@ -363,7 +371,10 @@ class TimerService : Service() {
         wakeLock = pm.newWakeLock(
             PowerManager.PARTIAL_WAKE_LOCK,
             "CircuitCaller::run"
-        ).apply { setReferenceCounted(false); acquire(4 * 60 * 60 * 1000L) }
+        ).apply {
+            setReferenceCounted(false)
+            acquire(4 * 60 * 60 * 1000L)
+        }
     }
 
     private fun releaseWakeLock() {

@@ -14,9 +14,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.material3.Surface as MaterialSurface
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface as MaterialSurface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -106,6 +106,7 @@ private fun AppRoot(onKeepScreenOn: (Boolean) -> Unit) {
             runState.active -> navController.navigate("run") {
                 launchSingleTop = true
             }
+
             runState.finished -> navController.navigate("done") {
                 launchSingleTop = true
             }
@@ -156,7 +157,6 @@ private fun AppRoot(onKeepScreenOn: (Boolean) -> Unit) {
 
     Box(Modifier.fillMaxSize()) {
         NavHost(navController = navController, startDestination = "library") {
-
             composable("library") {
                 LibraryScreen(
                     workouts = workouts,
