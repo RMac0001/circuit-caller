@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
@@ -42,7 +43,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.text.KeyboardOptions
 import com.roger.circuitcaller.data.Exercise
 import com.roger.circuitcaller.data.WorkoutWithExercises
 import com.roger.circuitcaller.timer.SegmentBuilder
@@ -94,7 +94,10 @@ fun EditorScreen(
         VSpace(10)
         Row(verticalAlignment = Alignment.CenterVertically) {
             RoundIconButton(
-                Icons.Default.ArrowBack, "Back", onBack, size = 40.dp
+                Icons.Default.ArrowBack,
+                "Back",
+                onBack,
+                size = 40.dp
             )
             Text(
                 "  Edit workout",
@@ -104,8 +107,11 @@ fun EditorScreen(
             RoundIconButton(Icons.Default.Add, "Duplicate workout", onDuplicate, size = 40.dp)
             Box(Modifier.width(8.dp))
             RoundIconButton(
-                Icons.Default.Delete, "Delete workout", { confirmDelete = true },
-                size = 40.dp, tint = Danger
+                Icons.Default.Delete,
+                "Delete workout",
+                { confirmDelete = true },
+                size = 40.dp,
+                tint = Danger
             )
         }
         VSpace(14)
@@ -309,7 +315,8 @@ private fun ExerciseRow(
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            Icons.Default.KeyboardArrowUp, "Move up",
+                            Icons.Default.KeyboardArrowUp,
+                            "Move up",
                             tint = if (canMoveUp) TextDim else Line
                         )
                     }
@@ -320,7 +327,8 @@ private fun ExerciseRow(
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            Icons.Default.KeyboardArrowDown, "Move down",
+                            Icons.Default.KeyboardArrowDown,
+                            "Move down",
                             tint = if (canMoveDown) TextDim else Line
                         )
                     }

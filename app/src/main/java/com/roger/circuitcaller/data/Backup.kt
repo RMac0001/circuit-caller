@@ -1,8 +1,8 @@
 package com.roger.circuitcaller.data
 
+import java.util.UUID
 import org.json.JSONArray
 import org.json.JSONObject
-import java.util.UUID
 
 /**
  * Backups are plain JSON so they can be read, diffed, and stored anywhere — a text file in
@@ -17,44 +17,48 @@ object Backup {
         root.put("version", VERSION)
         root.put("exportedAt", System.currentTimeMillis())
 
-        root.put("settings", JSONObject().apply {
-            put("voiceEnabled", settings.voiceEnabled)
-            put("countdownEnabled", settings.countdownEnabled)
-            put("beepsEnabled", settings.beepsEnabled)
-            put("vibrateEnabled", settings.vibrateEnabled)
-            put("keepScreenOn", settings.keepScreenOn)
-            put("halfwayCallout", settings.halfwayCallout)
-            put("ttsVoiceName", settings.ttsVoiceName)
-            put("speechRate", settings.speechRate.toDouble())
-            put("prepSeconds", settings.prepSeconds)
-        })
+        root.put(
+            "settings",
+            JSONObject().apply {
+                put("voiceEnabled", settings.voiceEnabled)
+                put("countdownEnabled", settings.countdownEnabled)
+                put("beepsEnabled", settings.beepsEnabled)
+                put("vibrateEnabled", settings.vibrateEnabled)
+                put("keepScreenOn", settings.keepScreenOn)
+                put("halfwayCallout", settings.halfwayCallout)
+                put("ttsVoiceName", settings.ttsVoiceName)
+                put("speechRate", settings.speechRate.toDouble())
+                put("prepSeconds", settings.prepSeconds)
+            }
+        )
 
         val arr = JSONArray()
         workouts.forEach { w ->
             val ex = JSONArray()
             w.orderedExercises.forEach { e ->
-                ex.put(JSONObject().apply {
-                    put("name", e.name)
-                    put("workSeconds", e.workSeconds)
-                    put("restSeconds", e.restSeconds)
-                })
+                ex.put(
+                    JSONObject().apply {
+                        put("name", e.name)
+                        put("workSeconds", e.workSeconds)
+                        put("restSeconds", e.restSeconds)
+                    }
+                )
             }
-            arr.put(JSONObject().apply {
-                put("name", w.workout.name)
-                put("rounds", w.workout.rounds)
-                put("defaultRestSeconds", w.workout.defaultRestSeconds)
-                put("prepOverrideSeconds", w.workout.prepOverrideSeconds)
-                put("exercises", ex)
-            })
+            arr.put(
+                JSONObject().apply {
+                    put("name", w.workout.name)
+                    put("rounds", w.workout.rounds)
+                    put("defaultRestSeconds", w.workout.defaultRestSeconds)
+                    put("prepOverrideSeconds", w.workout.prepOverrideSeconds)
+                    put("exercises", ex)
+                }
+            )
         }
         root.put("workouts", arr)
         return root.toString(2)
     }
 
-    data class ParsedBackup(
-        val workouts: List<Pair<Workout, List<Exercise>>>,
-        val settings: AppSettings?
-    )
+    data class ParsedBackup(val workouts: List<Pair<Workout, List<Exercise>>>, val settings: AppSettings?)
 
     /**
      * Validates fully before returning anything. A malformed file should produce a clear

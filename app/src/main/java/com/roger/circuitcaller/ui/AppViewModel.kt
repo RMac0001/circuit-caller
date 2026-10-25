@@ -9,13 +9,13 @@ import com.roger.circuitcaller.data.Backup
 import com.roger.circuitcaller.data.Exercise
 import com.roger.circuitcaller.data.Workout
 import com.roger.circuitcaller.data.WorkoutWithExercises
+import java.util.UUID
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.util.UUID
 
 class AppViewModel(app: Application) : AndroidViewModel(app) {
 
@@ -141,8 +141,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
 
     // ------------------------------------------------------------------ backup
 
-    suspend fun buildBackupJson(): String =
-        Backup.export(dao.getAll(), settingsRepo.settings.first())
+    suspend fun buildBackupJson(): String = Backup.export(dao.getAll(), settingsRepo.settings.first())
 
     fun importBackup(json: String, onResult: (String) -> Unit) {
         viewModelScope.launch {

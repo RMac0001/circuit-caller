@@ -15,8 +15,8 @@ import androidx.room.Relation
 import androidx.room.RoomDatabase
 import androidx.room.Transaction
 import androidx.room.Update
-import kotlinx.coroutines.flow.Flow
 import java.util.UUID
+import kotlinx.coroutines.flow.Flow
 
 @Entity(tableName = "workouts")
 data class Workout(
@@ -33,12 +33,14 @@ data class Workout(
 
 @Entity(
     tableName = "exercises",
-    foreignKeys = [ForeignKey(
-        entity = Workout::class,
-        parentColumns = ["id"],
-        childColumns = ["workout_id"],
-        onDelete = ForeignKey.CASCADE
-    )],
+    foreignKeys = [
+        ForeignKey(
+            entity = Workout::class,
+            parentColumns = ["id"],
+            childColumns = ["workout_id"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
     indices = [Index("workout_id")]
 )
 data class Exercise(
